@@ -1,0 +1,40 @@
+id: CVE-2024-7593
+
+info:
+  name: Virtual Traffic Manager (vTM) authentication bypass vulnerability
+  author: rxerium
+  severity: critical
+  description: Incorrect implementation of an authentication algorithm in Ivanti vTM other than versions 22.2R1 or 22.7R2 allows a remote unauthenticated attacker to bypass authentication of the admin panel
+  metadata:
+    max-request: 1
+  tags: ivanti,virtual-traffic-manager
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+      - "{{BaseURL}}:9090"
+      - "{{BaseURL}}/apps/zxtm/login.cgi"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "Login (Virtual Traffic Manager"
+
+      - type: word
+        words:
+          - "22.2"
+          - "22.3"
+          - "22.3R2"
+          - "22.5R1"
+          - "22.6R1"
+          - "22.7R1"
+        part: body
+
+    extractors:
+      - type: regex
+        part: body
+        regex:
+          - '"version">\s?([\w.]+)'
